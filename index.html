@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Classifier Upload</title>
+    <style>
+        body { font-family: sans-serif; padding: 50px; }
+        .container { max-width: 500px; margin: 0 auto; border: 1px solid #ccc; padding: 20px; border-radius: 8px; }
+        input { margin-bottom: 20px; display: block; }
+        button { padding: 10px 20px; background-color: #ff099d; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #0752df; }
+        #status { margin-top: 20px; font-weight: bold; }
+        pre { background: #f4f4f4; padding: 10px; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Upload Document</h2>
+    <p>Please upload your ILO, Seclore, or DSP document.</p>
+    
+    <input type="file" id="fileInput">
+    
+    <button onclick="uploadFile()">Upload File</button>
+
+    <div id="status"></div>
+    <pre id="jsonResponse"></pre>
+</div>
+
+<script>
+    async function uploadFile() {
+        const fileInput = document.getElementById('fileInput');
+        const statusDiv = document.getElementById('status');
+        const jsonResponseDiv = document.getElementById('jsonResponse');
+
+        // 1. Check if a file is selected
+        // if (fileInput.files.length === 0) {
+        //     alert("Please select a file first!");
+        //     return;
+        // }
+
+        const file = fileInput.files[0];
+        const formData = new FormData();
+        
+        // 'document' must match the backend: upload.single('document')
+        formData.append('document', file); 
+
+        statusDiv.innerText = "Uploading...";
+        jsonResponseDiv.innerText = "";
+
+        try {
+            // 2. Call your Backend API
+            const response = await fetch('http://localhost:8000/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            // 3. Display Result
+            if (response.ok) {
+                statusDiv.innerText = "Success! File Class: " + result.data.category;
+                statusDiv.style.color = "green";
+                // Show the full JSON response from the server
+                jsonResponseDiv.innerText = JSON.stringify(result, null, 2);
+            } else {
+                statusDiv.innerText = "Error: " + result.message;
+                statusDiv.style.color = "red";
+            }
+
+        } catch (error) {
+            console.error('Error:', error);
+            statusDiv.innerText = "Failed to connect to server.";
+            statusDiv.style.color = "red";
+        }
+    }
+</script>
+
+</body>
+</html>
