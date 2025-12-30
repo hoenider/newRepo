@@ -73,7 +73,7 @@ app.post("/upload", upload.single("document"), async (req, res) => {
     }
 
     
-       //CHECK 4 : PDF MAGIC HEADER
+       //CHECK 4 : PDF MAGIC HEADER(%PDF)
        
     const fd = fs.openSync(tempPath, "r");
     const buffer = Buffer.alloc(5);
@@ -143,4 +143,5 @@ connectDB()
   })
   .catch((err) => {
     console.error("MongoDB connection failed", err);
+  
   });
